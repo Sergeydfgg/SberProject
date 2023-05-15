@@ -1,0 +1,17 @@
+#!/bin/bash
+U=1
+Clone(){
+local ARC DATE DD i
+if [ "x${1}" == "x" ] ; then echo "ERROR: 1st parameter - \"URL to git\" not set" ; exit ; fi
+if [ "x${2}" == "x" ] ; then ARC="${1##*/}" ; ARC="${ARC%.git}" ; else ARC="${2}" ; fi
+if [ "x${3}" == "x" ] ; then DATE="_$(date +%Y-%m-%d)" ; else DATE="${3}" ; fi
+if [ "x${4}" != "x" ] ; then [ "${4:$((${#4}-1)):1}" == "/" ] && DD="${4}" || DD="${4}/" ; mkdir -p "${4}" ; fi
+i=0 ; while [ -f "${DD}${ARC}${DATE}.tar.gz" ] ; do [ $U == 1 ] && return ; DATE="${DATE%\.*}.${i}" ; ((i++)) ; done
+git clone "${1}" "${ARC}${DATE}"
+if [ -d "${ARC}${DATE}" ] ; then
+  tar cpzf "${DD}${ARC}${DATE}.tar.gz" "${ARC}${DATE}"
+  rm -rf "${ARC}${DATE}"
+fi
+}
+
+Clone "https://github.com/kmille/dkim-verify.git"
